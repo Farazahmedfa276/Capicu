@@ -21,7 +21,7 @@ export class JsonWebTokenService {
   async verifyToken<T extends object>(token: string) {
     try {
       const payload = await this.jwtService.verifyAsync<T>(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: 'Capicugame786',
       });
       return payload;
     } catch (error) {

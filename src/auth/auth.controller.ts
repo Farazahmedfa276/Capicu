@@ -81,34 +81,34 @@ export class AuthController {
     return { message };
   }
 
-  @Get('/google')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(GoogleOauthGuard)
-  signInWithGoogle() { }
+  // @Get('/google')
+  // @ApiBearerAuth('accessToken')
+  // @UseGuards(GoogleOauthGuard)
+  // signInWithGoogle() { }
 
-  @Get('/google/callback')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(
-    @GetUser() userDoc: any,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  // @Get('/google/callback')
+  // @ApiBearerAuth('accessToken')
+  // @UseGuards(GoogleOauthGuard)
+  // async googleAuthCallback(
+  //   @GetUser() userDoc: any,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
 
-     console.log(res,'controller')
-    const result = await this.authService.signInWithGoogle(userDoc);
-    console.log(result,"RESULT")
-    if ((result as { accessToken: string })?.accessToken) {
-      return res.redirect(
-        `${this.configService.get<string>('WEB_ORIGIN')}/#/?accessToken=${(result as { accessToken: string }).accessToken
-        }`,
-      );
-    }
+  //    console.log(res,'controller')
+  //   const result = await this.authService.signInWithGoogle(userDoc);
+  //   console.log(result,"RESULT")
+  //   if ((result as { accessToken: string })?.accessToken) {
+  //     return res.redirect(
+  //       `${this.configService.get<string>('WEB_ORIGIN')}/#/?accessToken=${(result as { accessToken: string }).accessToken
+  //       }`,
+  //     );
+  //   }
 
-    return res.redirect(
-      `${this.configService.get<string>('WEB_ORIGIN')}/#/?error=${(result as { error: string }).error
-      }`,
-    );
-  }
+  //   return res.redirect(
+  //     `${this.configService.get<string>('WEB_ORIGIN')}/#/?error=${(result as { error: string }).error
+  //     }`,
+  //   );
+  // }
 
   @Post('/resetPassword')
   @ApiBearerAuth('accessToken')

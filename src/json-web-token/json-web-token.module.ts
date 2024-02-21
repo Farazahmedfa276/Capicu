@@ -14,7 +14,7 @@ import { JwtStrategy } from './jwt-strategy';
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService): JwtModuleOptions => {
         return {
-          secret: configService.get<string>('JWT_SECRET'),
+          secret: 'Capicugame786',
         };
       },
       inject: [ConfigService],

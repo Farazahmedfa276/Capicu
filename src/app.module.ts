@@ -42,10 +42,7 @@ const cert_path = `${path.join(
       ): MongooseModuleFactoryOptions => {
         
         return {
-          uri: "mongodb://Capicu:%20%25e!3(2XD9q_%3F%5E*%2B@capicu-2024-02-16-20-03-13.cluster-cniczwgmkeja.us-east-2.docdb.amazonaws.com:27017/?authMechanism=DEFAULT",
-          sslCA: cert_path,
-          retryWrites: false,
-          ssl: true,
+          uri: "mongodb+srv://faraztest:pAs5peO7dGL05o0Y@capicu.g5h1qk1.mongodb.net/",
         };
       },
       inject: [ConfigService],

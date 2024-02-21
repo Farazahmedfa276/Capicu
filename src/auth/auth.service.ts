@@ -54,6 +54,7 @@ export class AuthService {
       lastName,
       userName,
       email,
+      isEmailVerified,
       password: unHashedPassword,
       isTermsOfServiceAndPrivacyPolicyAccepted,
     } = signUpDto;
@@ -92,6 +93,7 @@ export class AuthService {
       password: hashedPassword,
       isTermsOfServiceAndPrivacyPolicyAccepted,
       createdAt: new Date(),
+
       
     });
 
@@ -99,7 +101,7 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken(newUser);
 
-    this.emailService.sendVerificationEmail(newUser);
+    //this.emailService.sendVerificationEmail(newUser);
 
     return this.serializeUser(newUser, accessToken);
   }

@@ -5,7 +5,6 @@ import { AuthController } from './auth.controller';
 import { User, UserSchema } from '../users/user.schema';
 import { EmailModule } from 'src/email/email.module';
 import { JsonWebTokenModule } from 'src/json-web-token/json-web-token.module';
-import { GoogleStrategy } from './google.strategy';
 import { GoogleOauthGuard } from './google-oauth-guard';
 import { GeneralModule } from 'src/general/general.module';
 import { GeneralService } from 'src/general/general.service';
@@ -39,7 +38,6 @@ import { AvatarPrice, AvatarPriceSchema } from 'src/avatar-builder/avatar-price.
   providers: [
     AuthService,
     AuthUtilService,
-    GoogleStrategy,
     GoogleOauthGuard,
   ],
   controllers: [AuthController],

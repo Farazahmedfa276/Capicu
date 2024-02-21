@@ -32,4 +32,7 @@ export class SignUpDto {
 
   @IsBoolean()
   isTermsOfServiceAndPrivacyPolicyAccepted: boolean;
+
+  @IsBoolean()
+  isEmailVerified: boolean = true;
 }
