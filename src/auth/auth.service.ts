@@ -21,14 +21,11 @@ import { EmailService } from 'src/email/email.service';
 import { PasswordResetCodeDto } from './dtos/password-reset-code.dto';
 import { verifyMobileVerificationCodeDto } from './dtos/verify-mobile-verification-code.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
-import { GeneralService } from 'src/general/general.service';
+//import { GeneralService } from 'src/general/general.service';
 import * as moment from 'moment';
 import { AuthUtilService } from './auth.utils.service';
 import { SetPasswordDto } from './dtos/set-password.dto';
 import { Cache } from 'cache-manager';
-import { AssetPrice, AssetPriceDocument } from 'src/asset-builder/asset-price.schema';
-import { GameCenter, GameCenterDocument } from 'src/game-center/game-center.schema';
-import { AvatarPrice, AvatarPriceDocument } from 'src/avatar-builder/avatar-price.schema';
 
 const scrypt = promisify(_scrypt);
 
@@ -36,16 +33,11 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(AssetPrice.name) private assetPriceModel: Model<AssetPriceDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private generalService: GeneralService,
     private jsonWebTokenService: JsonWebTokenService,
     private emailService: EmailService,
     private authUtilService: AuthUtilService,
-    @InjectModel(GameCenter.name)
-    private gameCenterModel:Model<GameCenterDocument>,
-    @InjectModel(AvatarPrice.name)
-    private avatarPriceModel:Model<AvatarPriceDocument>
+    
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -254,22 +246,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  async isWhiteListed(chainId) {
-    if (chainId === process.env.BNB_CHAINID) {
-      let query = {
-        promotion_status: 1
-      }
-      const promotion = this.generalService.getLaunchDate(query);
-      return promotion?true:false;
-    }
-    if(chainId === process.env.POLYGON_CHAINID){
-      let query = {
-        promotion_polygon_status:1
-      }
-      const promotion = await this.generalService.getLaunchDate(query);
-      return promotion?true:false;
-    }
-  }
+  
 
   async resendMobileVerificationCode (  body  ) {
     console.log("body---->",body)
@@ -530,11 +507,11 @@ export class AuthService {
 
   async serializeUser(user: UserDocument, accessToken: string) {
     // console.log(accessToken,"accessToken")
-    let user_game_center = await this.gameCenterModel.count({'ownerId':user.id,'status':true})
+    //let user_game_center = await this.gameCenterModel.count({'ownerId':user.id,'status':true})
 
     //let promotion = await this.generalService.getLaunchDate()
 
-    user.gameCenters = user_game_center;
+    user.gameCenters = null;
     //user.discount = promotion?promotion.discount:0;
     const {
       __v,
@@ -544,11 +521,11 @@ export class AuthService {
       ...serializedUser
     } = user.toJSON();
 
-    let assetPrices = await this.assetPriceModel.find({},{"class":1,"image":1})
+   // let assetPrices = await this.assetPriceModel.find({},{"class":1,"image":1})
 
-    let avatarPrices = await this.avatarPriceModel.find({});
+    //let avatarPrices = await this.avatarPriceModel.find({});
     // console.log(googleUserId,"googleUserId")
-    return { ...serializedUser, accessToken,assetPrices,avatarPrices };
+    return { ...serializedUser, accessToken };
   }
 
   private async generateAccessToken(user: UserDocument) {

@@ -2,15 +2,7 @@
 import { BadRequestException, Body, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { GameCenter, GameCenterDocument } from 'src/game-center/game-center.schema';
-import { GeneralService } from 'src/general/general.service';
-import { RentType } from 'src/marketplace/constants/rent-type.enum';
-import { SellingType } from 'src/marketplace/constants/selling-type.enum';
-import { MarketPlace, MarketPlaceDocument } from 'src/marketplace/marketplace.schema';
-import { MarketPlaceService } from 'src/marketplace/marketplace.service';
-import { TournamentStatus } from 'src/tournaments/constants/tournament-status.enum';
-import { Tournament, TournamentDocument } from 'src/tournaments/tournament.schema';
-import { TournamentPlayer, TournamentPlayerDocument } from 'src/tournaments/tournament_players.schema';
+
 import { User, UserDocument } from 'src/users/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { GameStatus } from "./constants/game-status.enum";
@@ -24,18 +16,10 @@ export class GameService {
     constructor(
         @InjectModel(Game.name)
         private gameModel: Model<GameDocument>,
-        @InjectModel(TournamentPlayer.name)
-        private tournamentPlayerModel: Model<TournamentPlayerDocument>,
-        @InjectModel(Tournament.name)
-        private tournamentModel: Model<TournamentDocument>,
-        @InjectModel(GameCenter.name)
-        private gameCenterModel: Model<GameCenterDocument>,
+        
         private userService: UsersService,
-        private generalService: GeneralService,
         @InjectModel(User.name)
         private userModel: Model<UserDocument>,
-        @InjectModel(MarketPlace.name)
-        private marketPlaceModel: Model<MarketPlaceDocument>,
         @InjectModel(Quarter.name)
         private quarterModal: Model<QuarterDocument>
     ) { }
@@ -82,43 +66,7 @@ export class GameService {
 
     }
 
-    async tournamentMatch(data, tournament) {
-
-        let gameCenterId = await this.tournamentModel.findOne({ _id: data.tournament_id })
-
-
-        let game = await this.gameModel.findOne({ tournamentId: data.tournament_id, 'userIds.id': data.user.id }).sort({ round: -1 }).limit(1);
-
-        if (!game) {
-
-            throw new NotFoundException("Match Not Found");
-
-        }
-
-
-        let game_time = this.getGameTime(tournament, game.round)
-
-        // game.matchDate = game_time;
-
-
-        game.serverTime = new Date().getTime();
-        const timeDifferenceInMinutes = Math.floor((game.serverTime - game.matchDate) / (1000 * 60));
-        const maxAllowedTimeInMinutes = 30;
-        if (timeDifferenceInMinutes > maxAllowedTimeInMinutes) {
-            throw new NotFoundException("Match Time out");
-        }
-
-
-        game.timeDifference = this.getGameTimeDifference(game.matchDate);
-
-        let tournament_player = await this.tournamentPlayerModel.findOne({ 'tournament_id': tournament.id, 'user_id': data.user.id });
-
-        game.character = tournament_player.user.character
-        game.gameCenter = gameCenterId.gameCenter;
-        game.tournamnetStatus = gameCenterId.isCancelled
-        return game;
-
-    }
+    
 
     getGameTime(tournament, round) {
 
@@ -158,11 +106,7 @@ export class GameService {
 
         }
 
-        if (game.gameType == GameType.TOURNAMENT) {
-
-            await this.gameTimeStarted(game);
-
-        }
+        
 
         game.status = GameStatus.STARTED
         game.startTime = new Date().getTime();
@@ -189,40 +133,9 @@ export class GameService {
 
     }
 
-    async gameTimeStarted(game) {
+   
 
-        let tournament = await this.tournamentModel.findOne({ '_id': game.tournamentId })
-
-        let game_time = this.getGameTime(tournament, game.round);
-
-        let dif = this.getGameTimeDifference(game_time)
-
-        if (dif > 0) {
-
-            throw new BadRequestException("Game Time is not started")
-
-        }
-
-    }
-
-    async createTournamentGame(tournament) {
-
-        for (let i = 1; i <= tournament.noOfStages; i++) {
-
-            let users = await this.tournamentPlayerModel.find({
-                tournament_id: tournament.id,
-                round: i
-            }, { user: 1 }).sort({ registration_date: 1 });
-
-            let no_of_matches = Math.pow(tournament.noOfPlayers, tournament.noOfStages) / Math.pow(tournament.noOfPlayers, i);
-
-            let previousMatchesTotal = this.getPreviousMatchesTotal(tournament, i);
-
-            await this.generateMatches({ no_of_matches, users, tournament, i, previousMatchesTotal })
-
-        }
-
-    }
+    
 
     addDays(date, days) {
         var result = new Date(date);
@@ -455,29 +368,12 @@ export class GameService {
         game.winnerId = body.winnerId;
         
 
-        if (game.gameType === GameType.TOURNAMENT) {
-
-            await this.gameModel.updateOne({ 'tournamentId': game.tournamentId, 'matchNumber': game.nextMatchNumber },
-                {
-                    $push: { userIds: winning_user[0] }
-                })
-
-            await this.releaseLosingPlayers(body, game);
-
-            let next_game = await this.gameModel.findOne({ 'tournamentId': game.tournamentId, 'matchNumber': game.nextMatchNumber });
-
-            if (!next_game) {
-
-                this.endTournament(game);
-
-            }
-
-        }
-        else {
+        
+         
 
             let user = await this.userService.getUserById(body.winnerId);
 
-            let userPercentage = await this.generalService.getUserAssetPercentage(winning_user[0]?.character);
+            let userPercentage = 50;
 
             let winnings = await this.calculateWinning({ winner: user, userPercentage, total_prize: game.coins * game.userIds.length, character: winning_user[0].character })
 
@@ -496,105 +392,14 @@ export class GameService {
 
             game.duration = this.millisToMinutesAndSeconds(new Date().getTime() - game.startTime);
 
-            game.gameCenterShare = winnings['game_center_share'];
+            //game.gameCenterShare = winnings['game_center_share'];
 
             await this.userModel.updateOne({ "_id": user._id }, { $set: { userWinnings: user.userWinnings, domicoins: user.domicoins } })
 
-            await this.gameCenterShare(game, winnings['game_center_share']);
+            //await this.gameCenterShare(game, winnings['game_center_share']);
 
-            await this.adminShare(winnings['admin_share']);
-        }
-
-        if ( game.userIds.length == 1 ) {
-          game.winnerId = game.userIds[0].id;
-          game.status = GameStatus.ENDED;
-          game.gamePoints = [
-            {
-              id: game.userIds[0].id,
-              finalPoints: this.defaultScoreForGameMode(game.gameRule),
-            },
-          ];
-
-          await game.save();
-
-          return game;
-        }
+            //await this.adminShare(winnings['admin_share']);
         
-        let players = body.players
-
-        console.log("body.players",body.players)
-
-        players = players.map((player) => ({ id: player.playerUserID, pointsWon: player.playerScore }))
-
-        console.log("players",players)
-        
-        let allPlayerIds = players.map(({ id }) => id)
-
-        console.log("allPlayerIds---->",allPlayerIds)
-
-        let quarter = await this.generalService.getQuarterFromDate(game.createdAt)
-
-        console.log("Id of Quarter",quarter._id,"id of Game",game._id)
-
-        let medals = quarter.GameModes[quarter.GameModes.findIndex(v => v!.gameRulesName == game.gameRule)]
-
-        if (!medals) {
-            throw new NotFoundException("GameMode Not Found");
-        }
-
-        let aggregation = [
-            {
-                '$match': {
-                    'createdAt': { '$gte': new Date(quarter.startDate), '$lte': new Date(quarter.endDate) },
-                    'userIds.id': { '$in': allPlayerIds },
-                    'gamePoints': { $exists: true },
-                    'status': GameStatus.ENDED,
-                    'gameRule': game.gameRule,
-                }
-            },
-            {
-                '$unwind': '$gamePoints'
-            },
-            {
-                '$match': {
-                    'gamePoints.id': { '$in': allPlayerIds }
-                }
-            },
-            {
-                '$group': {
-                    '_id': '$gamePoints.id',
-                    'originalMMR': {
-                        '$sum': '$gamePoints.finalPoints'
-                    }
-                }
-            },
-            {
-                '$project': {
-                    '_id': 0,
-                    'id': '$_id',
-                    'MMR': { '$add': ['$originalMMR', 0] }
-                }
-            }
-        ]
-
-        let playersWithMMR = await this.gameModel.aggregate(aggregation);
-
-        const mmrMap = new Map(playersWithMMR.map(item => [item.id, item]));
-
-        const updatedMMRArray = players.map(item => ({
-            id: item.id,
-            MMR: mmrMap.has(item.id) ? mmrMap.get(item.id).MMR : 0
-        }));
-        
-        let playersWithMedals = this.generalService.assignMedals(updatedMMRArray, medals.ranges, medals.basePoints)
-        
-        const result = await this.calculateFinalPoints(players, playersWithMedals, body.winnerId, medals, quarter.pointsTable, game.gameRule)
-
-        let resolvedPromises = await Promise.all(result)
-
-        game.status = GameStatus.ENDED;
-        game.basePoints = medals?.basePoints;
-        game.gamePoints = resolvedPromises;
 
         // console.log("game-------->",game)
         
@@ -651,370 +456,8 @@ export class GameService {
     }
 
     async leaderBoard(query) {
-        const current_page = query?.page ? +query.page : 1;
-        const limit = query?.limit ? +query.limit : 10;
-        const offset = query?.offset ? +query.offset : (limit * current_page - limit);
-
-        let mongoQuery: any = {
-            'createdAt': null,
-            'winnerId': { $exists: true },
-            'userIds': { $exists: true },
-            'gamePoints': { $exists: true },
-            'status': 'ended'
-        }
-
-        if (query?.gameRule) {
-            mongoQuery['gameRule'] = query.gameRule
-        } else {
-            throw new Error("GameRule not provided")
-        }
-
-        let quarter: any;
-
-        if (query?.quarterId) {
-            quarter = await this.quarterModal.findOne({ _id: query.quarterId })
-        } else {
-            quarter = await this.generalService.lastQuarter()
-        }
-
-        let medals = quarter.GameModes[quarter.GameModes.findIndex(v => v!.gameRulesName == query?.gameRule)]
-
-        if (!medals || !medals?.ranges?.length) {
-            console.log('query---->', query, 'quarter', JSON.stringify(quarter, null, 2))
-            throw new Error("GameRule not found")
-        }
         
-        mongoQuery.createdAt = { '$gte': new Date(quarter.startDate), '$lte': new Date(quarter.endDate) }
-
-        let pipeline: any = [];
-
-        if (query?.searchTerm) {
-          pipeline = [
-            {
-              $match: mongoQuery,
-            },
-            {
-              $unwind: '$gamePoints',
-            },
-            {
-              $group: {
-                _id: '$gamePoints.id',
-                totalPointsWon: {
-                  $sum: '$gamePoints.finalPoints',
-                },
-                totalMatchesPlayed: {
-                  $sum: 1,
-                },
-                totalMatchesWon: {
-                  $sum: {
-                    $cond: {
-                      if: {
-                        $eq: ['$winnerId', '$gamePoints.id'],
-                      },
-                      then: 1,
-                      else: 0,
-                    },
-                  },
-                },
-              },
-            },
-            {
-              $addFields: {
-                objectIdUserId: {
-                  $toObjectId: '$_id',
-                },
-              },
-            },
-            {
-              $project: {
-                _id: 0,
-                id: '$_id',
-                MMR: {
-                  $max: [
-                    0,
-                    {
-                      $add: [medals.basePoints, '$totalPointsWon'],
-                    },
-                  ],
-                },
-                totalMatchesPlayed: 1,
-                totalMatchesWon: 1,
-                objectIdUserId: 1,
-                totalMatchesLost: {
-                  $subtract: ['$totalMatchesPlayed', '$totalMatchesWon'],
-                },
-              },
-            },
-            {
-              $sort: {
-                MMR: -1,
-                totalMatchesWon: -1,
-                totalMatchesPlayed: -1,
-                totalMatchesLost: 1,
-              },
-            },
-            {
-              $lookup: {
-                from: 'users',
-                localField: 'objectIdUserId',
-                foreignField: '_id',
-                as: 'user',
-              },
-            },
-            {
-              $unwind: '$user',
-            },
-            {
-              $group: {
-                _id: null,
-                resultArray: {
-                  $push: '$$ROOT',
-                },
-              },
-            },
-            {
-              $unwind: {
-                path: '$resultArray',
-                includeArrayIndex: 'arrayIndex',
-              },
-            },
-            {
-              $addFields: {
-                newArray: {
-                  $range: [
-                    1,
-                    {
-                      $add: ['$arrayIndex', 1],
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              $replaceRoot: {
-                newRoot: {
-                  $mergeObjects: [
-                    '$resultArray',
-                    {
-                      newArray: '$newArray',
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              $project: {
-                resultArray: 0,
-                arrayIndex: 0,
-              },
-            },
-            {
-              $match: {
-                'user.userName': {
-                  $regex: query?.searchTerm || '',
-                  $options: 'i',
-                },
-              },
-            },
-            {
-              $project: {
-                totalMatchesPlayed: 1,
-                totalMatchesWon: 1,
-                totalMatchesLost: 1,
-                id: 1,
-                userName: '$user.userName',
-                profilePicUrl: {
-                  $ifNull: [
-                    '$user.profileImage',
-                    '',
-                  ],
-                },
-                rank: {
-                  $add: [
-                    {
-                      $size: '$newArray',
-                    },
-                    1,
-                  ],
-                },
-                MMR: 1,
-              },
-            },
-            {
-              $sort: {
-                rank: 1,
-              },
-            },
-            {
-              $skip: offset,
-            },
-            {
-              $limit: limit,
-            },
-          ];
-        } else {
-          pipeline = [
-            {
-              '$match': mongoQuery,
-            },
-            {
-              '$unwind': '$gamePoints'
-            }, {
-              '$group': {
-                '_id': '$gamePoints.id', 
-                'totalPointsWon': {
-                  '$sum': '$gamePoints.finalPoints'
-                }, 
-                'totalMatchesPlayed': {
-                  '$sum': 1
-                }, 
-                'totalMatchesWon': {
-                  '$sum': {
-                    '$cond': {
-                      'if': {
-                        '$eq': [
-                          '$winnerId', '$gamePoints.id'
-                        ]
-                      }, 
-                      'then': 1, 
-                      'else': 0
-                    }
-                  }
-                }
-              }
-            }, {
-              '$project': {
-                '_id': 0, 
-                'id': '$_id', 
-                'MMR': {
-                  '$max': [
-                    0, {
-                      '$add': [
-                        medals.basePoints, '$totalPointsWon'
-                      ]
-                    }
-                  ]
-                }, 
-                'totalMatchesPlayed': 1, 
-                'totalMatchesWon': 1, 
-                'objectIdUserId': 1, 
-                'totalMatchesLost': {
-                  '$subtract': [
-                    '$totalMatchesPlayed', '$totalMatchesWon'
-                  ]
-                }
-              }
-            }, {
-              '$sort': {
-                'MMR': -1, 
-                'totalMatchesPlayed': -1, 
-                'totalMatchesWon': -1, 
-                'totalMatchesLost': 1
-              }
-            }, {
-              '$skip': offset
-            }, {
-              '$limit': limit
-            }, {
-              '$addFields': {
-                'objectIdUserId': {
-                  '$toObjectId': '$id'
-                }
-              }
-            }, {
-              '$lookup': {
-                'from': 'users', 
-                'localField': 'objectIdUserId', 
-                'foreignField': '_id', 
-                'as': 'user'
-              }
-            }, {
-              '$unwind': '$user'
-            }, {
-              '$project': {
-                '_id': '$objectIdUserId', 
-                'id': 1, 
-                'MMR': 1, 
-                'totalMatchesPlayed': 1, 
-                'totalMatchesWon': 1, 
-                'totalMatchesLost': 1, 
-                'userName': '$user.userName', 
-                'profilePicUrl': {
-                  '$ifNull': [
-                    '$user.profileImage', ''
-                  ]
-                }
-              }
-            }
-          ];
-        }
-        // console.log("here", JSON.stringify(pipeline, null, 2))
-
-        let players = await this.gameModel.aggregate(pipeline);
-        
-        let playersCount = await this.gameModel.aggregate(query?.searchTerm ? [
-            {
-                $match: mongoQuery
-            },
-            {
-                $unwind: '$gamePoints'
-            },
-            {
-                $group: {
-                    _id: '$gamePoints.id',
-                }
-            },
-            {
-                $addFields: {
-                    objectIdUserId: { $toObjectId: '$_id' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'objectIdUserId',
-                    foreignField: '_id',
-                    as: 'user'
-                }
-            },
-            {
-                $unwind: '$user'
-            },
-            {
-                $match: {
-                    'user.userName': {
-                        $regex: query?.searchTerm,
-                        $options: 'i'
-                    }
-                }
-            },
-            { '$count': 'count' }
-        ]
-            :
-            [
-                {
-                    $match: mongoQuery
-                },
-                {
-                    $unwind: '$gamePoints'
-                },
-                {
-                    $group: {
-                        _id: null,
-                        totalCount: { $addToSet: '$gamePoints.id' },
-                    }
-                },
-                {
-                    $project: {
-                        count: { $size: "$totalCount" }
-                    }
-                }
-            ])
-
-        const data = this.generalService.assignMedals(players, medals.ranges);
-
-        const total_count = playersCount.length === 0 ? 0 : playersCount[0].count;
-        return { data, total_count, current_page, limit };
+        return {  };
         // return { data:[], total_count:10, current_page, limit };
     }
 
@@ -1062,18 +505,7 @@ export class GameService {
         return minutes + ":" + (+seconds < 10 ? '0' : '') + seconds;
     }
 
-    async releaseLosingPlayers(body, game) {
-
-        let losing_users: any = game.userIds.filter(user => user.id != body.winnerId)
-
-        if (losing_users.length) {
-
-            losing_users.forEach(async user => {
-                await this.tournamentPlayerModel.updateOne({ user_id: user.id }, { $set: { inTournament: false } })
-            })
-
-        }
-    }
+   
 
     async getTournamentGamesWithSingleUsers() {
 
@@ -1418,16 +850,7 @@ export class GameService {
 
     }
 
-    async getTournamentWinningPrize(game, tournament) {
-
-        let tournamentPlayers = await this.tournamentPlayerModel.count({ tournament_id: game.tournamentId })
-
-        let total_prize = tournamentPlayers * tournament?.entryFee;;
-
-        tournament.prizePool = total_prize;
-
-        return total_prize;
-    }
+    
 
     async calculateWinning(data) {
 
@@ -1461,40 +884,7 @@ export class GameService {
 
     }
 
-    async endTournament(game) {
-
-        let tournament = await this.tournamentModel.findOne({ '_id': game.tournamentId })
-
-        let total_prize = await this.getTournamentWinningPrize(game, tournament);
-
-        let tournamentPlayer = await this.getUserByTournament(game.tournamentId, game.winnerId);
-
-        let userPercentage = await this.generalService.getUserAssetPercentage(tournamentPlayer.user.character);
-
-        let user = await this.userModel.findOne({ '_id': game.winnerId });
-
-        let winnings = await this.calculateWinning({ winner: user, tournament, total_prize, userPercentage, character: tournamentPlayer.user.character })
-
-        game.gameCenterShare = winnings['game_center_share'];
-
-        await game.save();
-
-        tournament.winnerShare = winnings['winner_prize'];
-
-        tournament.status = TournamentStatus.PAST
-
-        await tournament.save();
-
-
-        user.domicoins = user.domicoins + winnings['winner_prize'];
-
-        await user.save();
-
-        await this.gameCenterShare(tournament, winnings['game_center_share']);
-
-        await this.adminShare(winnings['admin_share']);
-
-    }
+    
 
     async adminShare(admin_share) {
         let admin_user = await this.userService.getAdminUser()
@@ -1504,34 +894,9 @@ export class GameService {
         await admin_user.save()
     }
 
-    async gameCenterShare(data, game_center_share) {
+    
 
-        console.log(game_center_share, "===> game_center_share")
-
-        let game_center = await this.gameCenterModel.findOne({ '_id': data.gameCenter });
-
-        console.log(data.gameCenter, "===> data.gameCenter")
-        console.log(game_center, "-==> game center")
-
-        if (game_center) {
-            console.log(game_center, "===> game center")
-            let game_center_user = await this.userModel.findOne({ '_id': game_center.ownerId });
-            console.log(game_center_user, "===> game center user");
-            game_center_user.domicoins += game_center_share;
-            console.log(game_center_share, "===> game share");
-            await game_center_user.save()
-
-        }
-
-    }
-
-    async getUserByTournament(tournament_id, user_id) {
-
-        let tournamentPlayer = await this.tournamentPlayerModel.findOne({ 'tournament_id': tournament_id, 'user_id': user_id })
-
-        return tournamentPlayer;
-
-    }
+    
 
     async userGame(id: string) {
 
@@ -1573,16 +938,9 @@ export class GameService {
         let rtn_price = 0;
 
         console.log('price before-->', rtn_price);
-        if (mintedCharacter) {
-            rtn_price += await this.getRentedPercentage(winner, mintedCharacter.tokenId, pool_price);
-        }
+        
         console.log('price after-->', rtn_price);
-        for (let i = 0; i < mintedInventory.length; i++) {
-            const { uri, tokenId } = mintedInventory[i];
-
-            rtn_price += await this.getRentedPercentage(winner, tokenId, pool_price);
-
-        }
+        
 
         console.log("TESTING", "deductRent", "rtn_price", rtn_price);
 
@@ -1590,30 +948,6 @@ export class GameService {
 
     }
 
-    async getRentedPercentage(winnerUser, tokenId, pool_price) {
-        console.log("TESTING", "getRentedPercentage", "pool_price", pool_price);
-        let currentDate = new Date().getTime()
-        let inventory = await this.marketPlaceModel.findOne({ type: SellingType.RENT, 'rentData.rentType': { $ne: RentType.FIXED }, tokenId: +tokenId, isSold: true, expiryTime: { $gt: currentDate }, "userWalletAddress": { $ne: null } });
-        //console.log("checkforrent", inventory, winnerUser);
-        if (!inventory) {
-            return 0;
-        }
-
-        let assetPercentage = await this.generalService.getAssetPercentagesByClass(inventory.inventoryClass);
-
-        let user = await this.userModel.findOne({ metaMaskWalletAddress: inventory.userWalletAddress })
-        let asset_share = pool_price * (assetPercentage.percentage / 100);
-        console.log("TESTING", "getRentedPercentage", "asset_share", asset_share);
-        //Owner of nft
-        let rented_user_share = (asset_share * (+inventory.rentData.rentEarning / 100)).toFixed(3);
-        console.log("TESTING", "getRentedPercentage", "rented_user_share", rented_user_share);
-        if (!user) {
-            user = await this.userModel.findOne({ '_id': inventory.userId });
-        }
-        user.domicoins += +rented_user_share
-        await user.save();
-        return +rented_user_share;
-
-    }
+    
 
 }

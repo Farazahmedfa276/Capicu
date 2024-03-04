@@ -96,26 +96,9 @@ export class UsersController {
     return await this.userService.getUser(id);
   }
 
-  @Put('avatar/categories')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(JwtAuthGuard)
-  async setAvatarCategories(
-    @GetUser() userDoc: UserDocument,
-    @Body() body: SetAvatarCategoriesDto,
-  ) {
-    const message = 'avatar categories saved successfuly';
-    const data = await this.userService.setAvatarCategories(userDoc, body);
-    return { message, ...data };
-  }
+  
 
-  @Get('avatar/categories')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(JwtAuthGuard)
-  async getAvatarCategories(@GetUser() userDoc: UserDocument) {
-    const message = 'user avatar categories';
-    const data = await this.userService.getAvatarCategories(userDoc);
-    return { message, ...data };
-  }
+  
 
   @Put('asset/categories')
   @ApiBearerAuth('accessToken')
@@ -129,18 +112,7 @@ export class UsersController {
     return { message, data };
   }
 
-  @Get('asset/categories')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(JwtAuthGuard)
-  async getUserAssetCategories(@GetUser() userDoc: UserDocument) {
-    try {
-      const message = 'User Assets Fetched Successfully';
-      const data = await this.userService.getUserAssetCategories(userDoc);
-      return { message, data };
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
-  }
+ 
 
   @Patch('domicoins/update')
   @ApiBearerAuth('accessToken')
@@ -176,19 +148,9 @@ export class UsersController {
     return await this.userService.removeWalletAddress(userDoc);
   }
 
-  @Put('save-hash')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(JwtAuthGuard)
-  async saveHash(@GetUser() userDoc: UserDocument,@Body() body){
-    return await this.userService.saveHash(userDoc,body);
-  }
+  
 
-  @Put('verify-hash')
-  @ApiBearerAuth('accessToken')
-  @UseGuards(JwtAuthGuard)
-  async verifyHash(@GetUser() userDoc: UserDocument,@Body() body){
-    return await this.userService.verifyHash(userDoc,body);
-  }
+ 
 
   
 
