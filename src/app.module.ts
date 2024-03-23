@@ -3,18 +3,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule, MongooseModuleFactoryOptions } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { AuthModule } from './auth/auth.module';
-// import { UsersModule } from './users/users.module';
-// import { EmailModule } from './email/email.module';
-//import { JsonWebTokenModule } from './json-web-token/json-web-token.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { EmailModule } from './email/email.module';
+import { JsonWebTokenModule } from './json-web-token/json-web-token.module';
 // import { TournamentsModule } from './tournaments/tournaments.module';
 //import { SchedularModule } from './schedular/schedular.module';
 // import { AvatarBuilderModule } from './avatar-builder/avatar-builder.module';
 // import { AssetBuilderModule } from './asset-builder/asset-builder.module';
-//import { UploadModule } from './upload/upload.module';
+import { UploadModule } from './upload/upload.module';
 // import { AssetBuilderCategoryChainModule } from './asset-builder-category-chain/asset-builder-category-chain.module';
 //import { GeneralModule } from './general/general.module';
-//import { GameModule } from './game/game.module';
+import { GameModule } from './game/game.module';
 // import { NftModule } from './nft/nft.module';
 // import { GameCenterModule } from './game-center/game-center.module';
 // import { MarketPlaceModule } from './marketplace/marketplace.module';
@@ -48,7 +48,13 @@ const cert_path = `${path.join(
       inject: [ConfigService],
     }),
 
-    
+    JsonWebTokenModule,
+    EmailModule,
+    AuthModule,
+    UsersModule,
+    UploadModule,
+    GameModule,
+    GameModule
     
   ],
 
