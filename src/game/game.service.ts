@@ -886,13 +886,7 @@ export class GameService {
 
     
 
-    async adminShare(admin_share) {
-        let admin_user = await this.userService.getAdminUser()
-        console.log('admin_share-->', admin_share);
-        admin_user.domicoins += admin_share;
-
-        await admin_user.save()
-    }
+    
 
     
 
