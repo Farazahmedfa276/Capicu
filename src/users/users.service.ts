@@ -2,18 +2,18 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthService } from 'src/auth/auth.service';
-import { Game, GameDocument } from 'src/game/game.schema';
-import { GameService } from 'src/game/game.service';
+//import { Game, GameDocument } from 'src/game/game.schema';
+// import { GameService } from 'src/game/game.service';
 import { Gender } from '../global/constants/gender.enum';
 import { SetAssetCategoriesDto } from './dtos/set-asset-categories.dto';
 import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { User, UserDocument } from './user.schema';
-import { GameType } from '../game/constants/game-type.enum'
-import { GameStatus } from 'src/game/constants/game-status.enum';
+// import { GameType } from '../game/constants/game-type.enum'
+// import { GameStatus } from 'src/game/constants/game-status.enum';
 import { throwError } from 'rxjs';
 // import { Quarter, QuarterDocument } from ""
-import { Quarter , QuarterDocument } from 'src/game/quarter.schema';
+// import { Quarter , QuarterDocument } from 'src/game/quarter.schema';
 
 @Injectable()
 export class UsersService {
@@ -23,11 +23,11 @@ export class UsersService {
     
     
     private authService:AuthService,
-    @InjectModel(Game.name)
-    private gameModel:Model<GameDocument>,
+    // @InjectModel(Game.name)
+    // private gameModel:Model<GameDocument>,
     
-    @InjectModel(Quarter.name)
-    private quarterModal: Model<QuarterDocument>
+    // @InjectModel(Quarter.name)
+    // private quarterModal: Model<QuarterDocument>
     
     ) {}
 
