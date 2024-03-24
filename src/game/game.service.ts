@@ -93,13 +93,13 @@ export class GameService {
 
         let game = await this.gameModel.findOne({ _id: body.matchId })
         if (!game) {
-         const usersWithEnoughCoins = await this.userModel.find({
-            "_id": { $in: body.userIds },
-            "domicoins": { $gte: body.coins }
-          });
-          if (usersWithEnoughCoins.length !== body.userIds.length) {
-            throw new BadRequestException("insufficient Domicoins")
-          }
+        //  const usersWithEnoughCoins = await this.userModel.find({
+        //     "_id": { $in: body.userIds },
+        //     "domicoins": { $gte: body.coins }
+        //   });
+        //   if (usersWithEnoughCoins.length !== body.userIds.length) {
+        //     throw new BadRequestException("insufficient Domicoins")
+        //   }
         await this.userModel.updateMany({ "_id": { $in: body.userIds } }, { $inc: { domicoins: -(body.coins) } })
         body.userIds = await this.convertUserIds(body.userIds)
         game = await this.gameModel.create(body);
