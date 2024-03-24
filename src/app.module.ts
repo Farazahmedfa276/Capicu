@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { EmailModule } from './email/email.module';
+// import { EmailModule } from './email/email.module';
 import { JsonWebTokenModule } from './json-web-token/json-web-token.module';
 // import { TournamentsModule } from './tournaments/tournaments.module';
 //import { SchedularModule } from './schedular/schedular.module';

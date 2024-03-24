@@ -15,7 +15,6 @@ import { SignUpDto } from './dtos/sign-up.dto';
 
 import { JwtAccessTokenPayload } from '../json-web-token/jwt-access-token-payload';
 import { JsonWebTokenService } from 'src/json-web-token/json-web-token.service';
-import { EmailService } from 'src/email/email.service';
 
 //import { GeneralService } from 'src/general/general.service';
 import * as moment from 'moment';
@@ -30,7 +29,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private jsonWebTokenService: JsonWebTokenService,
-    private emailService: EmailService,
+    
     
     
   ) {}
@@ -79,8 +78,7 @@ export class AuthService {
 
       const accessToken = await this.generateAccessToken(newUser);
 
-      this.emailService.sendVerificationEmail(newUser);
-
+      
       let result = await this.serializeUser(newUser, accessToken);
 
       return {data:{user:result}}
