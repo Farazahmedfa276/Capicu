@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/json-web-token/jwt-auth-guard';
-import { GetUserDto } from './dtos/get-user.dto';
-import { SetAssetCategoriesDto, SetMintedCategoryDto } from './dtos/set-asset-categories.dto';
-import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
-import { UpdatePasswordDto } from './dtos/update-password.dto';
+//import { GetUserDto } from './dtos/get-user.dto';
+//import { SetAssetCategoriesDto, SetMintedCategoryDto } from './dtos/set-asset-categories.dto';
+//import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
+//import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { GetUser } from './get-user.decorator';
 import { UserDocument } from './user.schema';

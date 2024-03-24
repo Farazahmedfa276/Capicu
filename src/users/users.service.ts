@@ -5,9 +5,9 @@ import { AuthService } from 'src/auth/auth.service';
 //import { Game, GameDocument } from 'src/game/game.schema';
 // import { GameService } from 'src/game/game.service';
 import { Gender } from '../global/constants/gender.enum';
-import { SetAssetCategoriesDto } from './dtos/set-asset-categories.dto';
-import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
-import { UpdatePasswordDto } from './dtos/update-password.dto';
+//import { SetAssetCategoriesDto } from './dtos/set-asset-categories.dto';
+//import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
+//import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { User, UserDocument } from './user.schema';
 // import { GameType } from '../game/constants/game-type.enum'
 // import { GameStatus } from 'src/game/constants/game-status.enum';
