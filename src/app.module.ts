@@ -49,7 +49,7 @@ const cert_path = `${path.join(
     }),
 
     JsonWebTokenModule,
-    EmailModule,
+    
     AuthModule,
     UsersModule,
     UploadModule,

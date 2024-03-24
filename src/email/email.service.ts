@@ -8,7 +8,6 @@ import { JwtEmailVerificationPayload } from 'src/json-web-token/jwt-email-verifi
 import { User, UserDocument } from 'src/users/user.schema';
 import IOTP from 'otp';
 import { nanoid } from 'nanoid';
-import { AuthUtilService } from 'src/auth/auth.utils.service';
         
 
 const OTP = require('otp');
@@ -20,7 +19,7 @@ export class EmailService {
     private mailerService: MailerService,
     private configService: ConfigService,
     private jsonWebTokenService: JsonWebTokenService,
-    private authUtilService: AuthUtilService,
+    
   ) {}
 
   async contactUs(data) {}
@@ -89,8 +88,7 @@ export class EmailService {
       throw new BadRequestException('User not found');
     }
 
-    await this.authUtilService.checkUserBlockStatus(user);
-
+    
     const otp = new OTP() as IOTP;
     const code = otp.totp(Date.now());
 
@@ -155,7 +153,7 @@ export class EmailService {
       throw new BadRequestException('User not found');
     }
 
-    await this.authUtilService.checkUserBlockStatus(user);
+    //await this.authUtilService.checkUserBlockStatus(user);
 
     const setPasswordToken = nanoid();
     user.setPasswordToken = setPasswordToken;
