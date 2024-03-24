@@ -50,15 +50,26 @@ export class AuthService {
 
     if (existingUser){
 
-      if(!existingUser?.googleUserId && existingUser.isEmailVerified){
-        throw new BadRequestException("Please signin using password.")
-      }
+      // if(!existingUser?.googleUserId && existingUser.isEmailVerified){
+      //   throw new BadRequestException("Please signin using password.")
+      // }
 
       const accessToken = await this.generateAccessToken(existingUser);
   
       let result = await this.serializeUser(existingUser, accessToken);
 
-      return {data:{user:result}}
+      let games = {
+        gamesWon: 0,
+        gamesPlayed:  0,
+        gamesLost:  0,
+        
+      }
+
+    const data = { result, games  };
+    const message = 'User Fetched Successfully';
+    return { message, data };
+
+      
       
     } else {
 
@@ -81,7 +92,16 @@ export class AuthService {
       
       let result = await this.serializeUser(newUser, accessToken);
 
-      return {data:{user:result}}
+      let games = {
+        gamesWon: 0,
+        gamesPlayed:  0,
+        gamesLost:  0,
+        
+      }
+
+      const data = { result, games  };
+    const message = 'User Fetched Successfully';
+    return { message, data };
       
     }
    
