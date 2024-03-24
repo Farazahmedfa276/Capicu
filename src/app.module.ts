@@ -11,7 +11,7 @@ import { JsonWebTokenModule } from './json-web-token/json-web-token.module';
 //import { SchedularModule } from './schedular/schedular.module';
 // import { AvatarBuilderModule } from './avatar-builder/avatar-builder.module';
 // import { AssetBuilderModule } from './asset-builder/asset-builder.module';
-import { UploadModule } from './upload/upload.module';
+//import { UploadModule } from './upload/upload.module';
 // import { AssetBuilderCategoryChainModule } from './asset-builder-category-chain/asset-builder-category-chain.module';
 //import { GeneralModule } from './general/general.module';
 //import { GameModule } from './game/game.module';
@@ -52,7 +52,7 @@ const cert_path = `${path.join(
     
     AuthModule,
     UsersModule,
-    UploadModule,
+    
     
     
   ],
