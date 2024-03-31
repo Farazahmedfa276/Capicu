@@ -12,27 +12,18 @@ import {
 export class SignUpDto {
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  authProvider: string;
 
   @IsString()
   @IsNotEmpty()
-  userName: string;
+  displayName: string;
 
   @Transform(({ value }) => (value as string).toLowerCase())
   @IsEmail({}, { message: 'Invalid Email or Password' })
   email: string;
 
-  @IsString()
-  @MinLength(8)
-  password: string;
-
-  @IsBoolean()
-  isTermsOfServiceAndPrivacyPolicyAccepted: boolean;
-
-  @IsBoolean()
-  isEmailVerified: boolean = true;
 }

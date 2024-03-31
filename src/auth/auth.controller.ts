@@ -24,9 +24,11 @@ export class AuthController {
   
 
   @Post('/mobile/socialLogin')
-  async socialLogin(@Body() body: any) {
+  async socialLogin(@Body() body: SignUpDto) {
+    console.log("tetstfaraz",body);
     return await this.authService.mobileSocialLogin(body);
   }
+  
 
  
 

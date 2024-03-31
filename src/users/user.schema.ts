@@ -144,7 +144,7 @@ export class User {
   @Prop({ select: false })
   passwordResetCode: string;
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isEmailVerified: boolean;
 
   @Prop({type:Object,default: null,})
@@ -194,7 +194,11 @@ export class User {
 
   
 
-  @Prop({})
+  @Prop({
+    default:
+      'https://dominoes-images-preprod.s3.ap-southeast-1.amazonaws.com/prcuxueo0yld8vz0ja1674483047542.jpg',
+  }
+)
   profilePicUrl: string;
 
   @Prop({})

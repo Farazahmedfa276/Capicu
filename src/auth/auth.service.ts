@@ -37,6 +37,7 @@ export class AuthService {
   
 
   async mobileSocialLogin(signUpDto: any) {
+    console.log("tetstfaraz",signUpDto);
     const {
       displayName,
       userId,
@@ -78,7 +79,7 @@ export class AuthService {
       let newUser = new this.userModel({
         googleUserId:userId,
         firstName : displayName || username[0],
-        userName : username[0],
+        userName : displayName,
         email,
         authProvider,
         isTermsOfServiceAndPrivacyPolicyAccepted:true,
