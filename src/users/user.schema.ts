@@ -123,10 +123,10 @@ export class User {
   @Prop({default:0})
   gameCenters:number
 
-  @Prop({ enum: Gender })
+  @Prop({ enum: Gender, default:Gender.NONE })
   gender: Gender;
 
-  @Prop()
+  @Prop({default:""})
   country: string;
 
   @Prop()
@@ -179,6 +179,9 @@ export class User {
 
   @Prop({ default: 0 })
   emailTimerCount: number;
+
+  @Prop({ default: 0 })
+  age: number;
 
   @Prop({ default: null })
   characterId: string;
