@@ -59,6 +59,12 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsInt()
+  @IsPositive()
+  age: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   defaultAvatarUrl: string;
 
