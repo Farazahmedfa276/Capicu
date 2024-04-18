@@ -98,6 +98,32 @@ export class UsersService {
 
   }
 
+  async LeaderBoards(){
+
+    let user = await this.userModel.find().select('_id email userName');
+
+    if(!user){
+
+      throw new NotFoundException("User Not Found")
+
+    }
+
+    // Map over each user and append the games object
+  let usersWithGames = user.map(use => ({
+    ...use.toObject(),
+    games: {
+      gamesWon: 0,
+      gamesPlayed: 0,
+      gamesLost: 0
+    }
+  }));
+
+  return usersWithGames;
+
+  }
+
+  
+
   
 
   

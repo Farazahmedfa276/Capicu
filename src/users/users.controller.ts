@@ -41,6 +41,12 @@ export class UsersController {
     return await this.userService.getUserDomicoins(user.id);
   }
 
+  @Get('LeaderBoard')
+  @ApiBearerAuth('accessToken')
+  async LeaderBoard() {
+    return await this.userService.LeaderBoards();
+  }
+
   @Post('me')
   @ApiBearerAuth('accessToken')
   @UseGuards(JwtAuthGuard)
@@ -50,6 +56,7 @@ export class UsersController {
   ) {
     return await this.userService.updateUser(userDoc, body);
   }
+  
 
  
 

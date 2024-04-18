@@ -123,10 +123,10 @@ export class User {
   @Prop({default:0})
   gameCenters:number
 
-  @Prop({ enum: Gender, default:Gender.NONE })
+  @Prop({ enum: Gender, default:Gender.MALE })
   gender: Gender;
 
-  @Prop({default:""})
+  @Prop({default:"US"})
   country: string;
 
   @Prop()
