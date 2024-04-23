@@ -217,7 +217,7 @@ export class User {
   createdAt: Date;
 
   @Prop()
-  assetPrices:[]
+  myProducts:[]
 
   @Prop()
   tokenURI:[]

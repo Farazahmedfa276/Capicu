@@ -18,6 +18,8 @@ import { JwtAuthGuard } from 'src/json-web-token/jwt-auth-guard';
 //import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
 //import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { ProductDto } from './dtos/buyProduct.dto';
+
 import { GetUser } from './get-user.decorator';
 import { UserDocument } from './user.schema';
 import { UsersService } from './users.service';
@@ -47,6 +49,7 @@ export class UsersController {
     return await this.userService.LeaderBoards();
   }
 
+
   @Post('me')
   @ApiBearerAuth('accessToken')
   @UseGuards(JwtAuthGuard)
@@ -56,8 +59,24 @@ export class UsersController {
   ) {
     return await this.userService.updateUser(userDoc, body);
   }
-  
 
+  @Post('buyProduct')
+  @ApiBearerAuth('accessToken')
+  @UseGuards(JwtAuthGuard)
+  async buyProduct(
+    @GetUser() userDoc: UserDocument,
+    @Body() body: ProductDto,
+  ) {
+    return await this.userService.buyProduct(userDoc, body);
+  }
+  
+  @Get('getProducts')
+  @ApiBearerAuth('accessToken')
+  @UseGuards(JwtAuthGuard)
+  async getProducts( @GetUser() userDoc: UserDocument ) {
+    console.log("----------",userDoc);
+    return await this.userService.getProducts(userDoc._id);
+  }
  
 
   @Get(':id')

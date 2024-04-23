@@ -9,6 +9,7 @@ import { Gender } from '../global/constants/gender.enum';
 //import { SetAvatarCategoriesDto } from './dtos/set-avatar-categories.dto';
 //import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { User, UserDocument } from './user.schema';
+import { ProductDto } from './dtos/buyProduct.dto';
 // import { GameType } from '../game/constants/game-type.enum'
 // import { GameStatus } from 'src/game/constants/game-status.enum';
 import { throwError } from 'rxjs';
@@ -50,6 +51,25 @@ export class UsersService {
     return await this.authService.serializeUser(user,user.accessToken);
   
   }
+
+  async buyProduct(userDoc: UserDocument, dto: ProductDto) {
+
+    let product = {
+      productId: dto.productId,
+      productName: dto.productName,
+      productPrice: dto.productPrice
+    }
+
+    const uupdateProducts = await this.userModel.findOneAndUpdate(
+      { _id: userDoc._id },
+      { $push: { myProducts: product } }, // Use $push to add product to myProducts array
+      { new: true }, // To return the updated document
+    );
+
+    return uupdateProducts?.myProducts;
+  }
+
+
 
   async getUser(id: string) {
     let user_exist = await this.getUserById(id);
@@ -119,6 +139,22 @@ export class UsersService {
   }));
 
   return usersWithGames;
+
+  }
+
+  async getProducts(id){
+    
+    let user = await this.userModel.findOne({'_id':id}).select('myProducts');
+
+    if(!user){
+
+      throw new NotFoundException("User Not Found")
+
+    }
+
+   
+  
+  return user;
 
   }
 
