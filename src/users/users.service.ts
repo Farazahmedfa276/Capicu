@@ -135,7 +135,7 @@ export class UsersService {
       gamesWon: 0,
       gamesPlayed: 0,
       gamesLost: 0,
-      Rank: i
+      Rank: i+1
     }
   }));
 
