@@ -131,12 +131,11 @@ export class UsersService {
     // Map over each user and append the games object
   let usersWithGames = user.map((use, i) => ({
     ...use.toObject(),
-    games: {
-      gamesWon: 0,
-      gamesPlayed: 0,
-      gamesLost: 0,
-      Rank: i+1
-    }
+    Rank: i+1,
+    gamesWon: 0,
+    gamesPlayed: 0,
+    gamesLost: 0,
+    
   }));
 
   return usersWithGames;
