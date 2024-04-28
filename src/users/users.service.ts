@@ -120,7 +120,7 @@ export class UsersService {
 
   async LeaderBoards(){
 
-    let user = await this.userModel.find().select('_id email userName');
+    let user = await this.userModel.find().select('_id email userName profilePicUrl');
 
     if(!user){
 
@@ -129,12 +129,13 @@ export class UsersService {
     }
 
     // Map over each user and append the games object
-  let usersWithGames = user.map(use => ({
+  let usersWithGames = user.map((use, i) => ({
     ...use.toObject(),
     games: {
       gamesWon: 0,
       gamesPlayed: 0,
-      gamesLost: 0
+      gamesLost: 0,
+      Rank: i
     }
   }));
 
