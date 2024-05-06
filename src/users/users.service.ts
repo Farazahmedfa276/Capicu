@@ -138,7 +138,7 @@ export class UsersService {
     
   }));
 
-  return usersWithGames;
+  return {"message": "Fetch LeaderBoard sucessfully", "data" :usersWithGames};
 
   }
 
