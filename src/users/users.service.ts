@@ -66,7 +66,9 @@ export class UsersService {
       { new: true }, // To return the updated document
     );
 
-    return uupdateProducts?.myProducts;
+    let user = await this.userModel.findOne({'_id':userDoc._id}).select('myProducts');
+
+    return user;
   }
 
 
