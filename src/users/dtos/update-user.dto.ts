@@ -76,6 +76,12 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsInt()
+  @IsPositive()
+  coins: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.toLowerCase())

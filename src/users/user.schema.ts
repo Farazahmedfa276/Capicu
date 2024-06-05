@@ -183,6 +183,9 @@ export class User {
   @Prop({ default: 0 })
   age: number;
 
+  @Prop({ default: 0 })
+  coins: number;
+
   @Prop({ default: null })
   characterId: string;
 
