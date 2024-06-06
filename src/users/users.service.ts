@@ -42,6 +42,15 @@ export class UsersService {
         }
     }
 
+    if (dto?.coins) {
+      let user = await this.userModel.findOneAndUpdate(
+        { _id: userDoc._id },
+        { $inc: { coins: dto.coins } },  // Increment the coins field by the value in dto.coins
+        { new: true }
+      );
+      return await this.authService.serializeUser(user,user.accessToken);
+    }
+
     let user = await this.userModel.findOneAndUpdate(
       { _id: userDoc._id },
       { $set: dto },
