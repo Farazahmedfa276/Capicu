@@ -277,15 +277,3 @@ type gameRuleInfoDto = {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.index(
-  { userName: 1 },
-  { unique: true, partialFilterExpression: { userName: { $exists: true } } },
-);
-
-UserSchema.index(
-  { email: 1 },
-  {
-    unique: true,
-    partialFilterExpression: { isEmailVerified: true },
-  },
-);

@@ -46,7 +46,7 @@ export class AuthService {
     } = signUpDto;
 
     const existingUser = await this.userModel.findOne({
-      email,
+      googleUserId: userId,
     });
 
     if (existingUser){
